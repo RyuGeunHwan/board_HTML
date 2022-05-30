@@ -14,7 +14,7 @@
             <div class="editor">
                 <div class="input-box">
                     <label for="studentsName">작성자 : </label>
-                    <input id="studentsName" type="text" value="현상원" readonly>
+                    <input id="studentsName" type="text" placeholder="본인 이름" readonly>
                 </div>
                 <div class="input-box">
                     <label for="title">제목 : </label>
@@ -246,6 +246,7 @@
     dataType : 'json', //서버결과를 json으로 응답받겠다.
     success: function(response){
      if(response!=null){
+         console.log(response)
          // html append 작성
      var html = ''
      if(response.length>0){
@@ -296,7 +297,7 @@
         var title = $('#title').val();
         var content = $('#content').val();
         var count = 0;
-        var studentsId = 21;
+        var studentsId = 2;
 
         if(title == ''){
             alert('제목을 작성해주세요')
