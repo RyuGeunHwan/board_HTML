@@ -9,28 +9,23 @@
 </head>
 <body>
     <div class="container">
-        <!-- 학생 정보 수정 -->
-        <div class="update-popup">
+        <!-- 접속 기록 팝업 -->
+        <div class="logs-popup">
             <div class="editor">
-                <div class="close">
-                    <a href="#" class="btn-close">닫기</a>
+                <div class="input-box">
+                    <label for="studentsName">접속 IP : </label>
+                    <input id="studentsName" type="text" value="192.168.52.43" readonly>
                 </div>
                 <div class="input-box">
-                    <label for="studentsId">학생 아이디 : </label>
-                    <input id="studentsId" type="text" placeholder="아이디 입력하세요...">
+                    <label for="title">접속 시간 : </label>
+                    <input id="title" type="text" value="2022-06-02 09:10:58" readonly>
                 </div>
                 <div class="input-box">
-                    <label for="studentsName">학생 이름 : </label>
-                    <input id="studentsName" type="text" placeholder="이름을 입력하세요...">
-                </div>
-                <div class="input-box">
-                    <label for="studentsPassword">학생 비밀번호 : </label>
-                    <input id="studentsPassword" type="text" placeholder="이름을 입력하세요...">
+                    <!-- 카카오맵 위치 -->
+                    <div id="map" style="width:500px;height:500px;"></div>
                 </div>
                 <div class="btn-area">
-                    <input id="boardIdHidden" type="hidden">
-                    <a id="contentUpdate" href="#" class="btn-update">수정</a>
-                    <a id="contentDelete" href="#" class="btn-delete">삭제</a>
+                    <a href="#" class="btn-cancel">닫기</a>
                 </div>
             </div>
         </div>
@@ -79,7 +74,7 @@
             <!-- search -->
             <div class="search">
                 <label>
-                    <input id="searchBar" type="text" placeholder="학생이름을 검색하세요..." >
+                    <!-- <input id="searchBar" type="text" placeholder="작성자를 검색하세요..." > -->
                 </label>
             </div>
             <div>
@@ -90,31 +85,39 @@
          <div class="details">
              <div class="recentOrders">
                  <div class="cardHeader">
-                     <h2>학생 명단</h2>
+                     <h2>접속자 히스토리</h2>
                  </div>
                  <table>
                      <thead>
                          <tr>
-                            <th>학생 아이디</th>
-                            <th>학생 이름</th>
-                            <th>가입 날짜</th>
-                        </tr>
+                            <th>로그 번호</th>
+                            <th>IP</th>
+                            <th>요청 URL</th>
+                            <th>HTTP Method</th>
+                            <th>접속 날짜</th>
+                         </tr>
                      </thead>
                      <tbody id="boardData">
-                         <tr>
-                             <td>hyunsangwon</td>
-                             <td>현상원</td>
-                             <td>2022-05-19</td>
+                         <tr onclick="getPopup()">
+                            <td>1</td>
+                            <td>192.158.0.252</td>
+                            <td>/board</td>
+                            <td>GET</td>
+                            <td>2022-05-19 13:33:02</td>
                          </tr>
-                         <tr>
-                            <td>hyunsangwon</td>
-                            <td>현상원</td>
-                            <td>2022-05-19</td>
+                         <tr onclick="getPopup()">
+                            <td>2</td>
+                            <td>192.158.0.252</td>
+                            <td>/board</td>
+                            <td>GET</td>
+                            <td>2022-05-19 13:33:02</td>
                         </tr>
-                        <tr>
-                            <td>hyunsangwon</td>
-                            <td>현상원</td>
-                            <td>2022-05-19</td>
+                        <tr onclick="getPopup()">
+                            <td>3</td>
+                            <td>192.158.0.252</td>
+                            <td>/board</td>
+                            <td>GET</td>
+                            <td>2022-05-19 13:33:02</td>
                         </tr>
                      </tbody>
                  </table>
@@ -138,6 +141,7 @@
       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
       crossorigin="anonymous"
     ></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=	195c9f3209ff194e99dd27723065dab3"></script>
 <script>
     let list = document.querySelectorAll('.navigation li');
     function activeLink(){
@@ -147,6 +151,35 @@
     list.forEach((item) => {item.addEventListener('mouseover',activeLink)});
 </script>
 <script>
+    function getPopup(){
+        $('.logs-popup').css('display', 'block');
+    }
+    $('.btn-cancel').click(function(){
+        $('.logs-popup').css('display', 'none');
+     });
 
+
+     // 카카오맵 
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = { 
+        center: new kakao.maps.LatLng(36.3286904, 127.4229992), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+    };
+
+    var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+    // 마커가 표시될 위치입니다 
+    var markerPosition  = new kakao.maps.LatLng(36.3286904, 127.4229992); 
+
+    // 마커를 생성합니다
+    var marker = new kakao.maps.Marker({
+        position: markerPosition
+    });
+
+    // 마커가 지도 위에 표시되도록 설정합니다
+    marker.setMap(map);
+
+    // 아래 코드는 지도 위의 마커를 제거하는 코드입니다
+    // marker.setMap(null);    
 </script>
 </html>
