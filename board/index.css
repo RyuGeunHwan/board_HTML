@@ -185,7 +185,7 @@ body{
 }
 
 .details table tbody td:last-child{
-    text-align: end;
+    text-align: center;
 }
 
 .details table tr{
@@ -275,7 +275,7 @@ body{
 .cardBox .card:hover .iconBx{
     color: var(--white);
 }
-
+/* 글 작성 */
 .write-popup{
     z-index: 1;
     display: none;
@@ -290,6 +290,7 @@ body{
     border-radius: 5px;
 }
 .editor{
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -298,6 +299,12 @@ body{
     margin-right: auto;
     width: 80%;
     height: 80%;
+}
+
+#map{
+    border: 1px solid;
+    border-radius: 20px;
+    margin-bottom: 10px;
 }
 .input-box{
     display: flex;
@@ -345,30 +352,17 @@ body{
     color: var(--white);
     border-radius: 3px;
 }
-.pagination{
-    text-align: center;
-    margin-top: 50px;
-}
-/* pagination css*/
-.pagination a{
-    padding: 0.5rem 0.75rem;
-    text-decoration: none;
-    background-color: var(--white);
-    color: var(--blue);
-    border: 1px solid #dddfeb;
-    line-height: 1.45;
-    font-size: 18px;
-}
-.pagination a:hover{
-    background-color: var(--blue);
-    color: var(--white);
-}
-.logout{
-    text-decoration: none;
-    font-size: 20px;
-    background-color: var(--blue);
-    color: var(--white);
-    padding: 0.5rem 0.75rem;
+.logs-popup{
+    z-index: 10;
+    display: block;
+    position: absolute;
+    left: 0; 
+    right: 0; 
+    margin : 40px auto;
+    width: 700px;
+    height: 500px;
+    background-color:var(--grey);
+    box-shadow: 0 7px 25px rgba(0,0,0,0.3);
     border-radius: 5px;
 }
 /* 글 수정 */
@@ -408,7 +402,7 @@ body{
     position: absolute;
     width: 50px;
     height: 50px;
-    right: 10px;
+    right: -10px;
 }
 .btn-close{
     font-size: 18px;
@@ -417,4 +411,31 @@ body{
     text-decoration: none;
     color: var(--white);
     border-radius: 3px;
+}
+/* pagination css*/
+.pagination{
+    text-align: center;
+    margin-top: 50px;
+}
+
+.pagination a{
+    padding: 0.5rem 0.75rem;
+    text-decoration: none;
+    background-color: var(--white);
+    color: var(--blue);
+    border: 1px solid #dddfeb;
+    line-height: 1.45;
+    font-size: 18px;
+}
+.pagination a:hover{
+    background-color: var(--blue);
+    color: var(--white);
+}
+.logout{
+    text-decoration: none;
+    font-size: 20px;
+    background-color: var(--blue);
+    color: var(--white);
+    padding: 0.5rem 0.75rem;
+    border-radius: 5px;
 }

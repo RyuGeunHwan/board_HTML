@@ -285,21 +285,26 @@
 
     //페이징 화면 구현
     var paginationHtml = '';
+  
+    // 이전페이지 버튼
     if(response.hasPreviousPage){// 이전페이지(hasPreviousPage)가 true라면 
         // hasPreviousPage : 이전버튼 유무(type => boolean)
         paginationHtml += '<a onclick="getBoardList('+(response.pageNum-1)+','+pageSize+')" href="#">Previous</a>';
     }
 
     for(var i=0; i<response.navigatepageNums.length; i++){ //페이지 번호 길이 만큼 for문 실행
+        // navigatepageNums : 블록 개수
         paginationHtml += '<a id="pageNum'+response.navigatepageNums[i]+'" onclick="getBoardList('+response.navigatepageNums[i]+','+pageSize+')" href="#">'+response.navigatepageNums[i]+'</a>';
     }
     
+    // 다음페이지 버튼
     if(response.hasNextPage){// 다음페이지(hasNextPage)가 true라면
         // hasNextPage : 다음버튼 유무(type => boolean)
         paginationHtml += '<a onclick="getBoardList('+(response.pageNum+1)+','+pageSize+')" href="#">Next</a>';
     }
     $('.pagination').children().remove();
     $('.pagination').append(paginationHtml);
+    
 
     // 페이지 번호에 맞게 css 수정
     $('#pageNum'+pageNum).css('background-color','#287bff');
