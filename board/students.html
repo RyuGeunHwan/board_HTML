@@ -101,7 +101,7 @@
                         </tr>
                      </thead>
                      <tbody id="boardData">
-                         <tr>
+                         <!-- <tr>
                              <td>hyunsangwon</td>
                              <td>현상원</td>
                              <td>2022-05-19</td>
@@ -115,7 +115,7 @@
                             <td>hyunsangwon</td>
                             <td>현상원</td>
                             <td>2022-05-19</td>
-                        </tr>
+                        </tr> -->
                      </tbody>
                  </table>
                  <div class="pagination">
@@ -147,6 +147,26 @@
     list.forEach((item) => {item.addEventListener('mouseover',activeLink)});
 </script>
 <script>
+    getAllList();
+    function getAllList(){
+        $.ajax({
+            url : 'http://localhost:8080/api/v1/students/map',
+            data : 'GET',
+            dataType : 'json',
+            success : function(response){
+                console.log(response)
+
+            var html = '';
+            for(var i=0; i<response.length; i++){
+                html = '<tr><td>'+response[i].studentsId+'</td><td>'+response[i].studentsName+'</td><td>'+response[i].createAt+'</td></tr>'
+                $('#boardData').append(html);
+            }
+            },
+            error : function(request,status,error){
+                console.log(error)
+            }
+        })
+    }
 
 </script>
 </html>
