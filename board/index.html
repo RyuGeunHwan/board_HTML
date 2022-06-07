@@ -238,7 +238,7 @@
     /*게시판 작성, 게시판 리스트 DB에서 호출*/
 
     //게시판 DB 호출
-    getBoardList(1, 10); 
+    getBoardList(1, 5); 
 
     //게시판 통계 함수 호출
     getBoardStatistics();
@@ -356,7 +356,7 @@
         var title = $('#title').val();
         var content = $('#content').val();
         var count = 0;
-        var studentsId = 19;
+        var studentsId = 4;
 
         if(title == ''){
             alert('제목을 작성해주세요')
@@ -436,7 +436,7 @@ function getBoard(boardId){
 
         setBoardViews(boardId) // 조회수 카운트 함수
         // 변수 html에 tr을 클릭하면 ajax를 실행(클릭한 특정게시글 상세보기 함수)하게 되면 해당 게시글 조회수 카운트 증가 함수도 같이 실행(setBoardViews메소드 실행)
-        
+  
     },error : function(request, statis, error){
         console.log(error)
     
@@ -510,11 +510,9 @@ function setBoardViews(boardId){ //게시판 조회수 증감 함수
             type : 'PATCH', // 해당게시글 클릭하면 조회수 증가하며 업데이트가 되어야함.
             dataType : 'json', //서버결과를 json으로 응답받겠다.
             success: function(response){
-            if(response>0){
-                // 방법1
-               $('#boardData').children().remove();
-               getBoardList(1, 10);
-            }
+                if(response==null){
+                    console.log("response==null")
+                }
         },error : function(request, statis, error){
             console.log(error)
         }

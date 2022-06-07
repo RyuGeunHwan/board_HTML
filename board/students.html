@@ -335,7 +335,7 @@
     }
     })
 
-    
+    // 학생추가
     $('.btn-insert').click(function(){
         var studentsName = $('#insertStudentsName').val();
         var studentsPassword = $('#insertStudentsPassword').val();
@@ -363,6 +363,8 @@
             success: function(response){
                 if(response>0){
                     alert("학생이 추가 되었습니다.")
+                    $('#insertStudentsName').val('');
+                    $('#insertStudentsPassword').val('');
                     $('.insert-popup').css('display', 'none')
                     $('#studentsData').children().remove();
                     getLogsList(1,5);
