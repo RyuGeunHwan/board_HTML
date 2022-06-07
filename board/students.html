@@ -21,16 +21,40 @@
                 </div>
                 <div class="input-box">
                     <label for="studentsName">학생 이름 : </label>
-                    <input id="studentsName" type="text" placeholder="이름을 입력하세요...">
+                    <input id="studentsName" type="text" placeholder="변경할 이름을 입력하세요...">
                 </div>
                 <div class="input-box">
                     <label for="studentsPassword">학생 비밀번호 : </label>
-                    <input id="studentsPassword" type="text" placeholder="이름을 입력하세요...">
+                    <input id="studentsPassword" type="password" placeholder="변경할 비밀번호를 입력하세요...">
+                </div>
+                <div class="input-box">
+                    <label for="createAt">가입날짜 : </label>
+                    <input id="createAt" type="text" readonly>
                 </div>
                 <div class="btn-area">
                     <input id="boardIdHidden" type="hidden">
                     <a id="contentUpdate" href="#" class="btn-update">수정</a>
                     <a id="contentDelete" href="#" class="btn-delete">삭제</a>
+                </div>
+            </div>
+        </div>
+        <!-- 학생 추가 -->
+        <div class="insert-popup">
+            <div class="editor">
+                <div class="close">
+                    <a href="#" class="btn-close">닫기</a>
+                </div>
+                <div class="input-box">
+                    <label for="studentsName">학생 이름 : </label>
+                    <input id="insertStudentsName" type="text" placeholder="이름을 입력하세요...">
+                </div>
+                <div class="input-box">
+                    <label for="studentsPassword">학생 비밀번호 : </label>
+                    <input id="insertStudentsPassword" type="password" placeholder="비밀번호를 입력하세요...">
+                </div>
+                <div class="btn-area">
+                    <input id="boardIdHidden" type="hidden">
+                    <a id="contentInsert" href="#" class="btn-insert">추가</a>
                 </div>
             </div>
         </div>
@@ -43,19 +67,19 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="index.html">
                         <span class="icon"><ion-icon name="home-outline"></ion-icon></span>
                         <span class="title">Dashboard</span>                
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="board/students.html">
                         <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
                         <span class="title">Students</span>                
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="logs.html">
                         <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
                         <span class="title">logs</span>                
                     </a>
@@ -91,6 +115,7 @@
              <div class="recentOrders">
                  <div class="cardHeader">
                      <h2>학생 명단</h2>
+                     <a href="#" class="btn">학생 추가</a>
                  </div>
                  <table>
                      <thead>
@@ -100,7 +125,7 @@
                             <th>가입 날짜</th>
                         </tr>
                      </thead>
-                     <tbody id="boardData">
+                     <tbody id="studentsData">
                          <!-- <tr>
                              <td>hyunsangwon</td>
                              <td>현상원</td>
@@ -119,13 +144,13 @@
                      </tbody>
                  </table>
                  <div class="pagination">
-                    <a href="#">Previous</a>
+                    <!-- <a href="#">Previous</a>
                     <a href="#">1</a>
                     <a href="#">2</a>
                     <a href="#">3</a>
                     <a href="#">4</a>
                     <a href="#">5</a>
-                    <a href="#">Next</a>
+                    <a href="#">Next</a> -->
                  </div>
              </div>
          </div>
@@ -147,26 +172,278 @@
     list.forEach((item) => {item.addEventListener('mouseover',activeLink)});
 </script>
 <script>
-    getAllList();
-    function getAllList(){
+    $('.btn-close').click(function(){ // 글 수정 팝업 닫기 누르면 팝업창 닫기
+        $('.update-popup').css('display', 'none');
+        $('.insert-popup').css('display', 'none');
+    });
+    $('.btn').click(function(){
+        $('.insert-popup').css('display', 'block')
+    })
+</script>
+<script>
+    // 학생 DB 전체조회
+    getLogsList(1,5);
+
+    // function getAllList(){
+    //     $.ajax({
+    //         url : 'http://localhost:8080/api/v1/students/map',
+    //         type : 'GET',
+    //         dataType : 'json',
+    //         success : function(response){
+    //             console.log(response)
+
+    //         var html = '';
+    //         for(var i=0; i<response.length; i++){
+
+    //             html = '<tr onclick="getStudents('+response[i].studentsId+')"><td>'+response[i].studentsId+'</td><td>'+response[i].studentsName+'</td><td>'+response[i].createAt+'</td></tr>'
+    //             $('#studentsData').append(html);
+    //         }
+    //         },
+    //         error : function(request,status,error){
+    //             console.log(error)
+    //         }
+    //     })
+    // }
+
+    function getLogsList(pageNum, pageSize){
+     $.ajax({
+         url : 'http://localhost:8080/api/v1/students/map?pageNum='+pageNum+'&pageSize='+pageSize,
+         type : 'GET',
+         dateType : 'json',
+         success : function(response){
+             console.log(response)
+            if(response != null){
+            var html = '';
+            for(var i=0; i<response.list.length; i++){
+                html += '<tr onclick="getStudents('+response.list[i].studentsId+')"><td>'+response.list[i].studentsId+'</td><td>'+response.list[i].studentsName+'</td><td>'+response.list[i].createAt+'</td></tr>'
+            }
+
+            //페이징 화면 구현
+        var paginationHtml = '';
+        
+        // 이전페이지 버튼
+        if(response.hasPreviousPage){// 이전페이지(hasPreviousPage)가 true라면 
+            // hasPreviousPage : 이전버튼 유무(type => boolean)
+            paginationHtml += '<a onclick="getLogsList('+(response.pageNum-1)+','+pageSize+')" href="#">Previous</a>';
+        }
+
+        for(var i=0; i<response.navigatepageNums.length; i++){ //페이지 번호 길이 만큼 for문 실행
+            // navigatepageNums : 블록 개수
+            paginationHtml += '<a id="pageNum'+response.navigatepageNums[i]+'" onclick="getLogsList('+response.navigatepageNums[i]+','+pageSize+')" href="#">'+response.navigatepageNums[i]+'</a>';
+        }
+        
+        // 다음페이지 버튼
+        if(response.hasNextPage){// 다음페이지(hasNextPage)가 true라면
+            // hasNextPage : 다음버튼 유무(type => boolean)
+            paginationHtml += '<a onclick="getLogsList('+(response.pageNum+1)+','+pageSize+')" href="#">Next</a>';
+        }
+        $('.pagination').children().remove();
+        $('.pagination').append(paginationHtml);
+
+        // 페이지 번호에 맞게 css 수정
+        $('#pageNum'+pageNum).css('background-color','#287bff');
+        $('#pageNum'+pageNum).css('color','#fff');
+
+        $('#studentsData').children().remove();
+         $('#studentsData').append(html);
+        }
+    },
+             error : function(request,status,error){
+                console.log(error)
+             }
+        })
+        }
+
+
+
+    // 특정 학생 조회
+    function getStudents(studentsId){
+
+        $('.update-popup').css('display','block')
         $.ajax({
-            url : 'http://localhost:8080/api/v1/students/map',
+            url : 'http://localhost:8080/api/v1/students/id/'+studentsId,
             data : 'GET',
             dataType : 'json',
             success : function(response){
+                $('#studentsId').val(response.studentsId);
+                $('#studentsName').val(response.studentsName);
+                $('#studentsPassword').val(response.studentsPassword);
+                $('#createAt').val(response.createAt);
                 console.log(response)
-
-            var html = '';
-            for(var i=0; i<response.length; i++){
-                html = '<tr><td>'+response[i].studentsId+'</td><td>'+response[i].studentsName+'</td><td>'+response[i].createAt+'</td></tr>'
-                $('#boardData').append(html);
-            }
             },
-            error : function(request,status,error){
+            error : function(request, statis, error){
                 console.log(error)
             }
         })
     }
 
+    // 학생 수정 
+    $('#contentUpdate').click(function(){
+        var jsonData = {
+            studentsName : $('#studentsName').val(),
+            studentsPassword : $('#studentsPassword').val()
+        }
+        console.log(jsonData)
+        var studentsId = $('#studentsId').val();
+        $.ajax({
+            url : 'http://localhost:8080/api/v1/students/id/'+studentsId,
+            type : 'PATCH',
+            contentType : 'application/json',
+            dataType : 'json',
+            data : JSON.stringify(jsonData),
+            success : function(response){
+                if(response>0){
+                    confirm("학생 정보를 수정 하시겠습니까?")
+                    if(confirm){
+                    $('.update-popup').css('display','none');
+                    $('#studentsName').val('');
+                    $('#studentsPassword').val('');
+                    alert("변경 사항이 저장 되었습니다.")
+                    $('#studentsData').children().remove();
+                    getLogsList(1,5);
+                    }
+                }
+            },error : function(request, statis, error){
+                console.log(error)
+            }
+
+        })
+    })
+
+    // 학생 삭제
+    $('#contentDelete').click(function(){
+        var studentsId = $('#studentsId').val();
+        confirm('해당 학생을 삭제 하시겠습니까?')
+    if(confirm){
+        $.ajax({
+            url : 'http://localhost:8080/api/v1/students/id/'+studentsId,
+            type : 'DELETE',
+            dataType : 'json',
+            success : function(response){
+                if(response>0){
+                    $('.update-popup').css('display','none');
+                    alert("ID : "+studentsId+"번이 삭제 되었습니다.")
+                    $('.update-popup').css('display', 'none')
+                    $('#studentsData').children().remove();
+                    getLogsList(1,5);
+                }
+            },error : function(request, statis, error){
+                console.log(error)
+            }
+
+        })
+    }
+    })
+
+    
+    $('.btn-insert').click(function(){
+        var studentsName = $('#insertStudentsName').val();
+        var studentsPassword = $('#insertStudentsPassword').val();
+        console.log(studentsName, studentsPassword )
+        var jsonData = {
+            studentsName : studentsName,
+            studentsPassword : studentsPassword
+        }
+        if(studentsName == '' || studentsPassword == ''){
+            alert("학생 정보를 입력해주세요!")
+            if(studentsName == ''){
+                $('#insertStudentsName').focus()
+            }else{
+                $('#insertStudentsPassword').focus()
+            }
+            return false;
+        }
+        if(confirm("학생을 추가 하시겠습니까?")){
+        $.ajax({
+            url : 'http://localhost:8080/api/v1/students',
+            type : 'POST',
+            contentType : 'application/json',//서버에 json타입으로 보낼 예정(요청).
+            dataType : 'json', //서버결과를 json으로 응답받겠다.
+            data : JSON.stringify(jsonData),
+            success: function(response){
+                if(response>0){
+                    alert("학생이 추가 되었습니다.")
+                    $('.insert-popup').css('display', 'none')
+                    $('#studentsData').children().remove();
+                    getLogsList(1,5);
+                }
+            }
+        ,error : function(request, statis, error){
+                console.log(error)
+            }
+        })
+    }
+
+})
+    
+   
+         // 쿼리 스트링으로 특정 학생 정보 찾기
+    $('#searchBar').keyup(function(key){
+        if(key.keyCode == 13){
+            var studentsName = $('#searchBar').val();
+            var pageNum = 1
+            var pageSize = 5
+            $.ajax({
+                url : 'http://localhost:8080/api/v1/students/search?studentsName='+studentsName+'&pageNum='+pageNum+'&pageSize='+pageSize,
+                type : 'GET',
+                dataType : 'json',
+                success : function(response){
+                    console.log(response)
+            if(response != null){
+            var html = '';
+            for(var i=0; i<response.list.length; i++){
+                html += '<tr onclick="getStudents('+response.list[i].studentsId+')"><td>'+response.list[i].studentsId+'</td><td>'+response.list[i].studentsName+'</td><td>'+response.list[i].createAt+'</td></tr>'
+            }
+
+         //페이징 화면 구현
+        var paginationHtml = '';
+        
+        // 이전페이지 버튼
+        if(response.hasPreviousPage){// 이전페이지(hasPreviousPage)가 true라면 
+            // hasPreviousPage : 이전버튼 유무(type => boolean)
+            paginationHtml += '<a onclick="getLogsList('+(response.pageNum-1)+','+pageSize+')" href="#">Previous</a>';
+        }
+
+        for(var i=0; i<response.navigatepageNums.length; i++){ //페이지 번호 길이 만큼 for문 실행
+            // navigatepageNums : 블록 개수
+            paginationHtml += '<a id="pageNum'+response.navigatepageNums[i]+'" onclick="getLogsList('+response.navigatepageNums[i]+','+pageSize+')" href="#">'+response.navigatepageNums[i]+'</a>';
+        }
+        
+        // 다음페이지 버튼
+        if(response.hasNextPage){// 다음페이지(hasNextPage)가 true라면
+            // hasNextPage : 다음버튼 유무(type => boolean)
+            paginationHtml += '<a onclick="getLogsList('+(response.pageNum+1)+','+pageSize+')" href="#">Next</a>';
+        }
+        $('.pagination').children().remove();
+        $('.pagination').append(paginationHtml);
+
+        // 페이지 번호에 맞게 css 수정
+        $('#pageNum'+pageNum).css('background-color','#287bff');
+        $('#pageNum'+pageNum).css('color','#fff');
+
+        $('#studentsData').children().remove();
+         $('#studentsData').append(html);
+            }
+                },error : function(request, statis, error){
+                    console.log(error)
+                }
+            })
+        }
+        // 검색 후 검색어 지우면 학생 전체리스트 보여주기
+        // keyCode = 8 : backspace
+        if(key.keyCode == 8){
+                    if($('#searchBar').val() == ''){
+                        $('#studentsData').children().remove();
+                        getLogsList(1,5);
+                    }
+                }
+        })
+
+   // 로그인 페이지 돌아가기
+        $('.logout').click(function(){
+            if(confirm("로그아웃 하시겠습니까?")){
+                location.href = '../login.html'
+            }
+        })
 </script>
 </html>

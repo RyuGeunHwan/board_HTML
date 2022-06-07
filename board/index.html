@@ -64,7 +64,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="students.html">
                         <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
                         <span class="title">Students</span>                
                     </a>
@@ -406,14 +406,16 @@
 })
 //contentSubmit click end
 
-function getBoard(boardId){ //클릭한 게시물 확인하는 함수
+
+
+//클릭한 게시물 확인하는 함수
+function getBoard(boardId){ 
     //boardId : 게시판 번호
 
     //boardId html에 hidden 하기
 
     //1. 화면 none -> block
     $('.update-popup').css('display', 'block');
-
 
     //AJAX 작성
     //1. AJAX를 이용해서 특정 게시물 조회
@@ -570,5 +572,11 @@ $('#boardData').append(html);
 }
 )
 
+   // 로그인 페이지 돌아가기
+   $('.logout').click(function(){
+            if(confirm("로그아웃 하시겠습니까?")){
+                location.href = '../login.html'
+            }
+        })
 </script>
 </html>
