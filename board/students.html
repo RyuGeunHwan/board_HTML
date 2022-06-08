@@ -104,6 +104,7 @@
             <div class="search">
                 <label>
                     <input id="searchBar" type="text" placeholder="학생이름을 검색하세요..." >
+                    <input id="keyword" type="hidden" value="null">
                 </label>
             </div>
             <div>
@@ -162,7 +163,7 @@
       src="https://code.jquery.com/jquery-3.6.0.min.js"
       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
       crossorigin="anonymous"
-    ></script>
+></script>
 <script>
     let list = document.querySelectorAll('.navigation li');
     function activeLink(){
@@ -206,8 +207,15 @@
     // }
 
     function getLogsList(pageNum, pageSize){
+        var controllerUrl = null;
+        var keyword = $('#keyword').val().trim();
+        if(keyword == 'null'){
+            controllerUrl = 'http://localhost:8080/api/v1/students/map?pageNum='+pageNum+'&pageSize='+pageSize
+        }else{
+            controllerUrl = 'http://localhost:8080/api/v1/students/search?studentsName='+keyword+'&pageNum='+pageNum+'&pageSize='+pageSize
+        }
      $.ajax({
-         url : 'http://localhost:8080/api/v1/students/map?pageNum='+pageNum+'&pageSize='+pageSize,
+         url : controllerUrl,
          type : 'GET',
          dateType : 'json',
          success : function(response){
@@ -246,7 +254,9 @@
 
         $('#studentsData').children().remove();
          $('#studentsData').append(html);
-        }
+        }else{
+                html += '<tr><td colspan=3 style="text-align:center;">게시글이 없습니다.</td></tr>'
+            }
     },
              error : function(request,status,error){
                 console.log(error)
@@ -379,67 +389,66 @@
 })
     
    
-         // 쿼리 스트링으로 특정 학생 정보 찾기
+    // 쿼리 스트링으로 특정 학생 정보 찾기
     $('#searchBar').keyup(function(key){
-        if(key.keyCode == 13){
-            var studentsName = $('#searchBar').val();
-            var pageNum = 1
-            var pageSize = 5
-            $.ajax({
-                url : 'http://localhost:8080/api/v1/students/search?studentsName='+studentsName+'&pageNum='+pageNum+'&pageSize='+pageSize,
-                type : 'GET',
-                dataType : 'json',
-                success : function(response){
-                    console.log(response)
-            if(response != null){
-            var html = '';
-            for(var i=0; i<response.list.length; i++){
-                html += '<tr onclick="getStudents('+response.list[i].studentsId+')"><td>'+response.list[i].studentsId+'</td><td>'+response.list[i].studentsName+'</td><td>'+response.list[i].createAt+'</td></tr>'
+    var pageNum = 1
+    var pageSize = 5
+    if(key.keyCode == 13){
+        var studentsName = $('#searchBar').val().trim();
+        if(studentsName != ''){
+            $('#keyword').val(studentsName); //hidden input 태그에 내가 검색한 키워드(search value)를 keyword value에 set함.
+        }
+        $.ajax({
+            url : 'http://localhost:8080/api/v1/students/search?studentsName='+studentsName+'&pageNum='+pageNum+'&pageSize='+pageSize,
+            type : 'GET',
+            dataType : 'json',
+            success : function(response){
+                console.log(response)
+        if(response != null){
+        var html = '';
+        for(var i=0; i<response.list.length; i++){
+            html += '<tr onclick="getStudents('+response.list[i].studentsId+')"><td>'+response.list[i].studentsId+'</td><td>'+response.list[i].studentsName+'</td><td>'+response.list[i].createAt+'</td></tr>'
+        }
+    //페이징 화면 구현
+    var paginationHtml = '';
+
+    // 이전페이지 버튼
+    if(response.hasPreviousPage){// 이전페이지(hasPreviousPage)가 true라면 
+        // hasPreviousPage : 이전버튼 유무(type => boolean)
+        paginationHtml += '<a onclick="getLogsList('+(response.pageNum-1)+','+pageSize+')" href="#">Previous</a>';
+    }
+    for(var i=0; i<response.navigatepageNums.length; i++){ //페이지 번호 길이 만큼 for문 실행
+        // navigatepageNums : 블록 개수
+        paginationHtml += '<a id="pageNum'+response.navigatepageNums[i]+'" onclick="getLogsList('+response.navigatepageNums[i]+','+pageSize+')" href="#">'+response.navigatepageNums[i]+'</a>';
+    }
+
+    // 다음페이지 버튼
+    if(response.hasNextPage){// 다음페이지(hasNextPage)가 true라면
+        // hasNextPage : 다음버튼 유무(type => boolean)
+        paginationHtml += '<a onclick="getLogsList('+(response.pageNum+1)+','+pageSize+')" href="#">Next</a>';
+    }
+    $('.pagination').children().remove();
+    $('.pagination').append(paginationHtml);
+    // 페이지 번호에 맞게 css 수정
+    $('#pageNum'+pageNum).css('background-color','#287bff');
+    $('#pageNum'+pageNum).css('color','#fff');
+    $('#studentsData').children().remove();
+    $('#studentsData').append(html);
+    }
+            },error : function(request, statis, error){
+                console.log(error)
             }
-
-         //페이징 화면 구현
-        var paginationHtml = '';
-        
-        // 이전페이지 버튼
-        if(response.hasPreviousPage){// 이전페이지(hasPreviousPage)가 true라면 
-            // hasPreviousPage : 이전버튼 유무(type => boolean)
-            paginationHtml += '<a onclick="getLogsList('+(response.pageNum-1)+','+pageSize+')" href="#">Previous</a>';
-        }
-
-        for(var i=0; i<response.navigatepageNums.length; i++){ //페이지 번호 길이 만큼 for문 실행
-            // navigatepageNums : 블록 개수
-            paginationHtml += '<a id="pageNum'+response.navigatepageNums[i]+'" onclick="getLogsList('+response.navigatepageNums[i]+','+pageSize+')" href="#">'+response.navigatepageNums[i]+'</a>';
-        }
-        
-        // 다음페이지 버튼
-        if(response.hasNextPage){// 다음페이지(hasNextPage)가 true라면
-            // hasNextPage : 다음버튼 유무(type => boolean)
-            paginationHtml += '<a onclick="getLogsList('+(response.pageNum+1)+','+pageSize+')" href="#">Next</a>';
-        }
-        $('.pagination').children().remove();
-        $('.pagination').append(paginationHtml);
-
-        // 페이지 번호에 맞게 css 수정
-        $('#pageNum'+pageNum).css('background-color','#287bff');
-        $('#pageNum'+pageNum).css('color','#fff');
-
-        $('#studentsData').children().remove();
-         $('#studentsData').append(html);
-            }
-                },error : function(request, statis, error){
-                    console.log(error)
-                }
-            })
-        }
-        // 검색 후 검색어 지우면 학생 전체리스트 보여주기
-        // keyCode = 8 : backspace
-        if(key.keyCode == 8){
-                    if($('#searchBar').val() == ''){
-                        $('#studentsData').children().remove();
-                        getLogsList(1,5);
-                    }
-                }
         })
+    }
+    // 검색 후 검색어 지우면 학생 전체리스트 보여주기
+    // keyCode = 8 : backspace
+    if(key.keyCode == 8){
+        if(keyword == 'null'){
+            $('#studentsData').children().remove();
+            getLogsList(1,5);
+        }
+    }
+    })
 
    // 로그인 페이지 돌아가기
         $('.logout').click(function(){

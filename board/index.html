@@ -95,6 +95,8 @@
             <div class="search">
                 <label>
                     <input id="searchBar" type="text" placeholder="작성자를 검색하세요...">
+                    <!-- 유의 사항 : 새로고침 하기 전까지 value에 값이 들어가 있음. -->
+                    <input id="keyword" type="hidden" value="null">
                 </label>
             </div>
             <div>
@@ -245,9 +247,18 @@
 
 
     function getBoardList(pageNum, pageSize){//게시판 DB 호출 로직 구현
+
+        // 검색을 하여서 controllerUrl을 구분하기 위하여 
+        var controllerUrl = null
+        var keyword = $('#keyword').val().trim();
+        if(keyword == 'null'){
+            controllerUrl = 'http://localhost:8080/api/v1/board?pageNum='+pageNum+'&pageSize='+pageSize;
+        }else{
+            controllerUrl = 'http://localhost:8080/api/v1/board/search?writer='+keyword+'&pageNum='+pageNum+'&pageSize='+pageSize
+        }
     $.ajax({
-        // 'http://localhost:8080/api/v1/board?pageNum=1&pageSize=10' => 변수를 이용하지 않고 직접 값을 입력해주는 것을 '하드코딩'이라고 한다.
-    url : 'http://localhost:8080/api/v1/board?pageNum='+pageNum+'&pageSize='+pageSize,
+    // 'http://localhost:8080/api/v1/board?pageNum=1&pageSize=10' => 변수를 이용하지 않고 직접 값을 입력해주는 것을 '하드코딩'이라고 한다.
+    url : controllerUrl,
     type : 'GET',
     dataType : 'json', //서버결과를 json으로 응답받겠다.
     success: function(response){
@@ -309,8 +320,8 @@
     // 페이지 번호에 맞게 css 수정
     $('#pageNum'+pageNum).css('background-color','#287bff');
     $('#pageNum'+pageNum).css('color','#fff');
-    
-    }else{ 
+    }
+    else{ 
         //response(게시판의 작성글을 조회한 결과)가 0이라면
         //게시판에 게시글이 없을 때 : "게시글 없음" 로직 구현
         html += '<tr><td colspan=6 style="text-align:center;">게시글이 없습니다.</td></tr>'
@@ -319,7 +330,8 @@
     $('#boardData').children().remove();
      $('#boardData').append(html);// tbody에 json데이터 렌더링
     }
-    },error : function(request, statis, error){
+    }//success end
+    ,error : function(request, statis, error){
         console.log(error)
     
     }
@@ -525,42 +537,79 @@ function setBoardViews(boardId){ //게시판 조회수 증감 함수
 // 3. keypress : 키보드를 계속 누르고 있을 때
 $('#searchBar').keyup(function(key){// 키보드를 뗄 때 무엇을 눌렀다가 뗐는데 파라미터 key에 들어감.
     //엔터를 누를떄 hello word를 출력하고 싶음.
+    var pageNum = 1;
+    var pageSize = 5;
     // keycode = 13 은 enter를 의미
     if(key.keyCode ==13){
     //1. input값을 가져옴.
-    var search = $('#searchBar').val(); //input에 작성한 작성글을 가져옴
+    var search = $('#searchBar').val().trim(); //input에 작성한 작성글을 가져옴
+    if(search != ''){
+        $('#keyword').val(search); //hidden input 태그에 내가 검색한 키워드(search value)를 keyword value에 set함.
+    }
     //2. AJAX 호출
     $.ajax({
-    url : 'http://localhost:8080/api/v1/board/search?writer='+search,
+    url : 'http://localhost:8080/api/v1/board/search?writer='+search+'&pageNum='+pageNum+'&pageSize='+pageSize,
     type : 'GET',
     dataType : 'json', //서버결과를 json으로 응답받겠다.
     success: function(response){
-     if(response!=null){
+        if(response!=null){
          console.log(response)
          // html append 작성
-     var html = '';
-     if(response.length>0){
-     for(var i=0; i<response.length; i++){
-        var views = response[i].cnt;
+     var html = ''
+     if(response.list.length>0){
+     for(var i=0; i<response.list.length; i++){
+        // 아래 조회수 로직 구현 예정
+        // ex) var 조회수 = response[i].조회수;
+        var views = response.list[i].cnt;
         if(views<10){
-            html += '<tr onclick=getBoard('+response[i].boardId+')><td>'+response[i].boardId+'</td><td>'+response[i].studentsName+'</td><td>'+response[i].title+'</td><td>'+response[i].updateAt+'</td><td>'+response[i].createAt+'</td><td><span class="row">'+response[i].cnt+'</span></td></tr>'
+            // ctrl + shift + h => 전체 replace
+            html += '<tr onclick=getBoard('+response.list[i].boardId+')><td>'+response.list[i].boardId+'</td><td>'+response.list[i].studentsName+'</td><td>'+response.list[i].title+'</td><td>'+response.list[i].updateAt+'</td><td>'+response.list[i].createAt+'</td><td><span class="row">'+response.list[i].cnt+'</span></td></tr>'
         }
         if(views>=10 && views<20){
-            html += '<tr onclick=getBoard('+response[i].boardId+')><td>'+response[i].boardId+'</td><td>'+response[i].studentsName+'</td><td>'+response[i].title+'</td><td>'+response[i].updateAt+'</td><td>'+response[i].createAt+'</td><td><span class="middle">'+response[i].cnt+'</span></td></tr>'
+            html += '<tr onclick=getBoard('+response.list[i].boardId+')><td>'+response.list[i].boardId+'</td><td>'+response.list[i].studentsName+'</td><td>'+response.list[i].title+'</td><td>'+response.list[i].updateAt+'</td><td>'+response.list[i].createAt+'</td><td><span class="middle">'+response.list[i].cnt+'</span></td></tr>'
         }
         if(views>=20){
-            html += '<tr onclick=getBoard('+response[i].boardId+')><td>'+response[i].boardId+'</td><td>'+response[i].studentsName+'</td><td>'+response[i].title+'</td><td>'+response[i].updateAt+'</td><td>'+response[i].createAt+'</td><td><span class="high">'+response[i].cnt+'</span></td></tr>'
+            html += '<tr onclick=getBoard('+response.list[i].boardId+')><td>'+response.list[i].boardId+'</td><td>'+response.list[i].studentsName+'</td><td>'+response.list[i].title+'</td><td>'+response.list[i].updateAt+'</td><td>'+response.list[i].createAt+'</td><td><span class="high">'+response.list[i].cnt+'</span></td></tr>'
         }
+    } //end for
+
+
+    //페이징 화면 구현
+    var paginationHtml = '';
+  
+    // 이전페이지 버튼
+    if(response.hasPreviousPage){// 이전페이지(hasPreviousPage)가 true라면 
+        // hasPreviousPage : 이전버튼 유무(type => boolean)
+        paginationHtml += '<a onclick="getBoardList('+(response.pageNum-1)+','+pageSize+')" href="#">Previous</a>';
     }
-}else{ 
-    //response(게시판의 작성글을 조회한 결과)가 0이라면
-    //게시판에 게시글이 없을 때 : "게시글 없음" 로직 구현
-    html += '<tr><td colspan=6 style="text-align:center;">게시글이 없습니다.</td></tr>'
-    // colspan : 테이블의 셀을 *가로로 병합. <-> rowspan : 테이블의 셀을 *세로로 병합.
-}
-}
-$('#boardData').children().remove();
-$('#boardData').append(html);
+
+    for(var i=0; i<response.navigatepageNums.length; i++){ //페이지 번호 길이 만큼 for문 실행
+        // navigatepageNums : 블록 개수
+        paginationHtml += '<a id="pageNum'+response.navigatepageNums[i]+'" onclick="getBoardList('+response.navigatepageNums[i]+','+pageSize+')" href="#">'+response.navigatepageNums[i]+'</a>';
+    }
+    
+    // 다음페이지 버튼
+    if(response.hasNextPage){// 다음페이지(hasNextPage)가 true라면
+        // hasNextPage : 다음버튼 유무(type => boolean)
+        paginationHtml += '<a onclick="getBoardList('+(response.pageNum+1)+','+pageSize+')" href="#">Next</a>';
+    }
+    $('.pagination').children().remove();
+    $('.pagination').append(paginationHtml);
+    
+
+    // 페이지 번호에 맞게 css 수정
+    $('#pageNum'+pageNum).css('background-color','#287bff');
+    $('#pageNum'+pageNum).css('color','#fff');
+    }
+    else{ 
+        //response(게시판의 작성글을 조회한 결과)가 0이라면
+        //게시판에 게시글이 없을 때 : "게시글 없음" 로직 구현
+        html += '<tr><td colspan=6 style="text-align:center;">게시글이 없습니다.</td></tr>'
+        // colspan : 테이블의 셀을 *가로로 병합. <-> rowspan : 테이블의 셀을 *세로로 병합.
+     }
+    $('#boardData').children().remove();
+     $('#boardData').append(html);// tbody에 json데이터 렌더링
+    }//success end
 },error : function(request, statis, error){
     console.log(error)
     

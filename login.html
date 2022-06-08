@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
-    <script src="jquery.cookie.js"></script>  
+    <!-- <script src="jquery.cookie.js"></script>   -->
     <title>게시판 로그인</title>
   </head>
   <body>
@@ -71,8 +71,8 @@
             console.log(error)
           }
         })
-        $.cookie('studentsName', id, { expires: 7, path: '/', domain: 'http://localhost:8080/api/v1/login', secure: false })
-        console.log($.cookie('studentsName'))
+        // $.cookie('studentsName', id, { expires: 7, path: '/', domain: 'http://localhost:8080/api/v1/login', secure: false })
+        // console.log($.cookie('studentsName'))
       })
 
    </script>
