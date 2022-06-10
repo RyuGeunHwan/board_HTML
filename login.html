@@ -21,7 +21,9 @@
           <label>비밀번호</label>
         </div>
         <input class="login-btn" type="butten" value="로그인" />
-        <div class="signup-link">회원이 아닌가요? <a href="join.html">회원가입</a></div>
+        <div class="signup-link">
+          회원이 아닌가요? <a href="join.html">회원가입</a>
+        </div>
       </div>
     </div>
     <script
@@ -30,51 +32,50 @@
       crossorigin="anonymous"
     ></script>
     <script>
-    
       // 로그인 버튼을 클릭했을때 함수 실행
-      $('.login-btn').click(function(){
-        let id = $('#userId').val()
-        let password = $('#userPassword').val()
-        if(id === '' || password === ''){
-          alert("정보를 모두 입력 해주세요!")
-          if(id === ''){
-            $('#userId').focus();
-          }else{
-            $('#userPassword').focus();
+      $(".login-btn").click(function () {
+        let id = $("#userId").val();
+        let password = $("#userPassword").val();
+        if (id === "" || password === "") {
+          alert("정보를 모두 입력 해주세요!");
+          if (id === "") {
+            $("#userId").focus();
+          } else {
+            $("#userPassword").focus();
           }
           return false;
         }
-        
+
         // $.cookie('name',id,{expires:})
         var jsonData = {
-          studentsName : id,
-          studentsPassword : password
-        }
+          studentsName: id,
+          studentsPassword: password,
+        };
 
         $.ajax({
-          url : 'http://localhost:8080/api/v1/login',
-          type : 'POST',
-          contentType : 'application/json',
-          dataType : 'json',
-          data : JSON.stringify(jsonData),
-          success: function(response){
-          console.log(response)
-            if(response !== null){
-              if(response){
+          url: "http://localhost:8080/api/v1/login",
+          type: "POST",
+          contentType: "application/json",
+          dataType: "json",
+          data: JSON.stringify(jsonData),
+          success: function (response) {
+            console.log(response);
+            if (response !== null) {
+              if (response) {
                 // location.href : 페이지 이동 함수
-                location.href = 'board/index.html'; //페이지 이동(board폴더에 있는 index.html 파일로 이동)
-              }else{
-                alert('비밀번호 혹은 이름이 틀렸습니다.')
+                location.href = "board/index.html"; //페이지 이동(board폴더에 있는 index.html 파일로 이동)
+              } else {
+                alert("비밀번호 혹은 이름이 틀렸습니다.");
               }
             }
-          }, error:function(request, statis, error){
-            console.log(error)
-          }
-        })
+          },
+          error: function (request, statis, error) {
+            console.log(error);
+          },
+        });
         // $.cookie('studentsName', id, { expires: 7, path: '/', domain: 'http://localhost:8080/api/v1/login', secure: false })
         // console.log($.cookie('studentsName'))
-      })
-
-   </script>
+      });
+    </script>
   </body>
 </html>
