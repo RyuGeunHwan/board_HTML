@@ -240,7 +240,7 @@
     /*게시판 작성, 게시판 리스트 DB에서 호출*/
 
     //게시판 DB 호출
-    getBoardList(1, 5); 
+    getBoardList(1, 10); 
 
     //게시판 통계 함수 호출
     getBoardStatistics();
@@ -368,7 +368,7 @@
         var title = $('#title').val();
         var content = $('#content').val();
         var count = 0;
-        var studentsId = 4;
+        var studentsId = 28;
 
         if(title == ''){
             alert('제목을 작성해주세요')
@@ -490,7 +490,7 @@ $('#contentUpdate').click(function(){
 
 })
 
-
+//게시글 삭제
 $('#contentDelete').click(function(){
     var boardId = $('#boardIdHidden').val();
         confirm('해당 게시물을 삭제 하시겠습니까?')
