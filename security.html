@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Please sign in</title>
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body>
+    <div class="container">
+      <form class="form-signin" method="post" action="/login">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <p>
+          <label for="id" class="sr-only">Id</label>
+          <input
+            type="text"
+            id="userId"
+            name="userId"
+            class="form-control"
+            placeholder="UserId"
+            required
+          />
+          <label for="username" class="sr-only">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            class="form-control"
+            placeholder="Username"
+            required
+            autofocus
+          />
+        </p>
+        <p>
+          <label for="password" class="sr-only">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-control"
+            placeholder="Password"
+            required
+          />
+        </p>
+        <input
+          name="_csrf"
+          type="hidden"
+          value="105dde1d-84a1-48a4-8fc4-e500d1f907fa"
+        />
+        <button class="btn btn-lg btn-primary btn-block" type="submit">
+          Sign in
+        </button>
+      </form>
+    </div>
+  </body>
+  <script
+    type="module"
+    src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+  ></script>
+  <script
+    nomodule
+    src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+  ></script>
+  <script
+    src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+    crossorigin="anonymous"
+  ></script>
+
+  <script>
+    var jsonData = {
+      id: "비밀번호0000",
+      password: "0000",
+      name: "류근환",
+    };
+    $.ajax({
+      url: "http://localhost:8080/user/save",
+      type: "POST",
+      contentType: "application/json",
+      dataType: "json",
+      data: JSON.stringify(jsonData),
+      success: function (response) {
+        console.log(response);
+        if (response !== null) {
+          if (response) {
+            // location.href : 페이지 이동 함수
+            location.href = "board/index.html"; //페이지 이동(board폴더에 있는 index.html 파일로 이동)
+          } else {
+            alert("비밀번호 혹은 이름이 틀렸습니다.");
+          }
+        }
+      },
+      error: function (request, statis, error) {
+        console.log(error);
+      },
+    });
+  </script>
+</html>
