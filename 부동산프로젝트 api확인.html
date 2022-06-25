@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <p id="xml"></p>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $.ajax({
+          url: "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev", //ajax로 ajax_xml.xml파일을 불러온다.
+          cache: false, //사용자캐시를 사용할 것인가.
+          dataType: "xml", //서버로부터 받을 것으로 예상되는 데이터 타입.
+          success: function (data) {
+            //ajax요청을 통해 반환되는 데이터 data.
+            $(data)
+              .find("movie")
+              .each(function () {
+                var info = "title : " + $(this).find("title").text() + "<br/>";
+                $("#wrap").append(info);
+              });
+          },
+        });
+      });
+    </script>
+    <div id="wrap"></div>
+     
+  </body>
+</html>
