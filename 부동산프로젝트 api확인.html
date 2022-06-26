@@ -11,44 +11,19 @@
       <div id="xml"></div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script type="text/javascript">
-
-const xhr = new XMLHttpRequest();
-const method = "GET";
-const url = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?_wadl&type=xml";
-
-// 요청을 초기화 합니다.
-xhr.open(method, url);
-
-// onreadystatechange 이벤트를 이용해 요청에 대한 응답 결과를 처리합니다.
-xhr.onreadystatechange = function (event) {
-    const { target } = event;
-
-    if (target.readyState === XMLHttpRequest.DONE) {
-        const { status } = target;
-
-        if (status === 0 || (status >= 200 && status < 400)) {
-          alert(xhr)
-            // 요청이 정상적으로 처리 된 경우
-        } else {
-          alert("에러에러")
-            // 에러가 발생한 경우
-        }
-    }
-};
-
-// 서버에 요청을 보냅니다.
-xhr.send();
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script>
       // script
 $.ajax({
-    url: url, // 읽어올 문서
-    type: 'GET', // 방식
-    dataType: 'xml', // 문서 타입
-    timeout: 1000, // 시간 설정
+    url: 'http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?_wadl&type=xml?key=aSCM%2F5Ots7gmMlPot0uJqovKb6lWh2JJO4xrkq%2B%2BCLUg5YUFUBneFBFQpdR2R2IukYpMtZywjzMC8rmofdiirw%3D%3D', // 읽어올 문서
+    dataType: 'GET', // 방식
+    data : 'xml',
     error: function(){ // 로딩 에러시
         alert('Error loading XML document');
     },
     success: function(xml){
+      console.log(xml);
     $(xml).find('item').each(function(){  // xml 문서 item 기준으로 분리후 반복
         var transactionAmount = $(this).find("거래금액").text();
         var roadName = $(this).find("도로명").text(); 
@@ -56,7 +31,8 @@ $.ajax({
         var serialNumber = $(this).find("일련번호").text(); 
         var html = "<p>"+transactionAmount+"</p>"+"<p>"+roadName+"</p>"+"<p>"+apt+"</p>"+"<p>"+serialNumber+"</p>"
         var view_text = transactionAmount + roadName + apt + serialNumber ; 
-        $("#xml").append(html);  // #id 에 view_text 삽입
+        console.log(view_text);
+        $("#xml").append(view_text);  // #id 에 view_text 삽입
     });
 } 
 });
