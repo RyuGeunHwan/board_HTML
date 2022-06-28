@@ -8,34 +8,197 @@
   </head>
   <body>
     <div class="container">
-      <div id="xml"></div>
+      <div id="xml">
+        <p id="item">hello world</p>
+      </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script>
-      // script
-$.ajax({
-    url: 'http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?_wadl&type=xml?key=aSCM%2F5Ots7gmMlPot0uJqovKb6lWh2JJO4xrkq%2B%2BCLUg5YUFUBneFBFQpdR2R2IukYpMtZywjzMC8rmofdiirw%3D%3D', // 읽어올 문서
-    dataType: 'GET', // 방식
-    data : 'xml',
-    error: function(){ // 로딩 에러시
-        alert('Error loading XML document');
-    },
-    success: function(xml){
-      console.log(xml);
-    $(xml).find('item').each(function(){  // xml 문서 item 기준으로 분리후 반복
-        var transactionAmount = $(this).find("거래금액").text();
-        var roadName = $(this).find("도로명").text(); 
-        var apt = $(this).find("아파트").text(); 
-        var serialNumber = $(this).find("일련번호").text(); 
-        var html = "<p>"+transactionAmount+"</p>"+"<p>"+roadName+"</p>"+"<p>"+apt+"</p>"+"<p>"+serialNumber+"</p>"
-        var view_text = transactionAmount + roadName + apt + serialNumber ; 
-        console.log(view_text);
-        $("#xml").append(view_text);  // #id 에 view_text 삽입
-    });
-} 
-});
+      // callAPI(); //함수 실행
+
+      function callAPI() {
+        // 지역코드 => 30110 : 동구 , 30140 : 중구 , 30170 : 서구 , 30200 : 유성구 , 30230 : 대덕구
+        const API_KEY = "서비스 인증키";
+        //30110 : 동구 , 30140 : 중구, 30170 : 서구, 30200 : 유성구, 30230 : 대덕구
+        const LAWD_CD = [30110, 30140, 30170, 30200, 30230];
+        var DEAL_YMD = [
+          "202101",
+          "202102",
+          "202103",
+          "202104",
+          "202105",
+          "202106",
+          "202107",
+          "202108",
+          "202109",
+          "202110",
+          "202111",
+        ]; //거래 날짜(YYYYMM)
+
+        for (var i = 0; i < DEAL_YMD.length; i++) {
+          for (var j = 0; j < LAWD_CD.length; j++) {
+            var API_URL =
+              "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?LAWD_CD=" +
+              LAWD_CD[i] +
+              "&DEAL_YMD=" +
+              DEAL_YMD[i] +
+              "&pageNo=1&numOfRows=300&resultType=xml&serviceKey=" +
+              API_KEY;
+            $.ajax({
+              url: API_URL,
+              data: "GET",
+              dataType: "xml",
+              success: function (response) {
+                resultResponse(response); //백엔드 연결하는 함수
+                //console.log($(response).find("item").length);
+              },
+            });
+          }
+        }
+      }
+
+      /*
+      childNodes[0] ~  childNodes[27]
+      0: 거래금액
+      2: 건축년도
+      3: 년
+      4: 도로명
+      5: 도로명건물본번호코드
+      6: 도로명건물부번호코드
+      7: 도로명시군구코드
+      8: 도로명일련번호코드
+      9: 도로명지상지하코드
+      10: 도로명코드
+      11: 법정동
+      12: 법정동본번코드
+      13: 법정동부번코드
+      14: 법정동시군구코드
+      15: 법정동읍면동코드
+      16: 법정동지번코드
+      17: 아파트
+      18: 월
+      19: 일
+      20: 일련번호
+      21: 전용면적
+      23: 지번
+      24: 지역코드
+      25: 층
+      26: 해제사유발생일
+      27: 해제여부
+        */
+      //오픈 API 파서
+      function resultResponse(data) {
+        // console.log($(data).find("item"));
+        //데이터 접근하는 방법
+        for (var i = 0; i < $(data).find("item").length; i++) {
+          var dealAmount = $(data)
+            .find("item")
+            [i].childNodes[0].innerHTML.trim()
+            .replace(",", ""); //거래금액
+          var buildYear = $(data)
+            .find("item")
+            [i].childNodes[2].innerHTML.trim(); //건축년도
+          var dealYear = $(data).find("item")[i].childNodes[3].innerHTML.trim(); // 계약년도
+          var roadName = $(data).find("item")[i].childNodes[4].innerHTML.trim(); //도로명
+          var roadNameBonbun = $(data)
+            .find("item")
+            [i].childNodes[5].innerHTML.trim(); //도로명건물본번호코드
+          var roadNameBunbun = $(data)
+            .find("item")
+            [i].childNodes[6].innerHTML.trim(); //도로명건물부번호코드
+          var roadNameSigunguCode = $(data)
+            .find("item")
+            [i].childNodes[7].innerHTML.trim(); //도로명시군구코드
+          var roadNameSeq = $(data)
+            .find("item")
+            [i].childNodes[8].innerHTML.trim(); //도로명일련번호코드
+          var roadNameBasementCode = $(data)
+            .find("item")
+            [i].childNodes[9].innerHTML.trim(); //도로명지상지하코드
+          var roadNameCode = $(data)
+            .find("item")
+            [i].childNodes[10].innerHTML.trim(); //도로명코드
+          var dong = $(data).find("item")[i].childNodes[11].innerHTML.trim(); //법정동
+          var bonbun = $(data).find("item")[i].childNodes[12].innerHTML.trim(); //법정동본번코드
+          var bunbun = $(data).find("item")[i].childNodes[13].innerHTML.trim(); //법정동부번코드
+          var sigunguCode = $(data)
+            .find("item")
+            [i].childNodes[14].innerHTML.trim(); //법정동시군구코드
+          var eubmyundongCode = $(data)
+            .find("item")
+            [i].childNodes[15].innerHTML.trim(); //법정동읍면동코드
+          var landCode = $(data)
+            .find("item")
+            [i].childNodes[16].innerHTML.trim(); //법정동지번코드
+          var apartmentName = $(data)
+            .find("item")
+            [i].childNodes[17].innerHTML.trim(); //아파트명
+          var dealMonth = $(data)
+            .find("item")
+            [i].childNodes[18].innerHTML.trim(); //계약월
+          var dealDay = $(data).find("item")[i].childNodes[19].innerHTML.trim(); //계약일
+          var serialNumber = $(data)
+            .find("item")
+            [i].childNodes[20].innerHTML.trim(); //일련번호
+          var areaForExclusiveUse = $(data)
+            .find("item")
+            [i].childNodes[21].innerHTML.trim(); //전용면적
+          var jibun = $(data).find("item")[i].childNodes[23].innerHTML.trim(); //지번
+          var regionalCode = $(data)
+            .find("item")
+            [i].childNodes[24].innerHTML.trim(); //지역코드
+          var floor = $(data).find("item")[i].childNodes[25].innerHTML.trim(); //층
+          var cancelDealDay = $(data)
+            .find("item")
+            [i].childNodes[26].innerHTML.trim(); //해제사유발생일
+          //jsonData 총 27개
+          var jsonData = {
+            dealAmount: dealAmount,
+            buildYear: buildYear,
+            dealYear: dealYear,
+            roadName: roadName,
+            roadNameBonbun: roadNameBonbun,
+            roadNameBunbun: roadNameBunbun,
+            roadNameSigunguCode: roadNameSigunguCode,
+            roadNameSeq: roadNameSeq,
+            roadNameBasementCode: roadNameBasementCode,
+            roadNameCode: roadNameCode,
+            dong: dong,
+            bonbun: bonbun,
+            bunbun: bunbun,
+            sigunguCode: sigunguCode,
+            eubmyundongCode: eubmyundongCode,
+            landCode: landCode,
+            apartmentName: apartmentName,
+            dealMonth: dealMonth,
+            dealDay: dealDay,
+            serialNumber: serialNumber,
+            areaForExclusiveUse: areaForExclusiveUse,
+            jibun: jibun,
+            regionalCode: regionalCode,
+            floor: floor,
+            cancelDealDay: cancelDealDay,
+          }; //jsonData-end
+
+          $.ajax({
+            url: "http://192.168.0.254:8080/open",
+            type: "POST",
+            contentType: "application/json",
+            dataType: "json",
+            data: JSON.stringify(jsonData),
+            success: function (response) {
+              if (response > 0) {
+                console.log(response);
+              }
+            },
+            error: function (request, statis, error) {
+              console.log(error);
+            },
+          }); // ajax end
+        } //end-for
+      }
     </script>
   </body>
 </html>
