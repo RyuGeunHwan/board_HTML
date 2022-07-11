@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div id="xml">
+        <p id="item">국토 교통부</p>
+        <p id="apartmentInformation"></p>
+      </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script>
+      const APP_KEY =
+        "aSCM%2F5Ots7gmMlPot0uJqovKb6lWh2JJO4xrkq%2B%2BCLUg5YUFUBneFBFQpdR2R2IukYpMtZywjzMC8rmofdiirw%3D%3D";
+      var kaptCode = "A10025450";
+      $.ajax({
+        url:
+          "http://apis.data.go.kr/1613000/AptBasisInfoService1/getAphusBassInfo?kaptCode=" +
+          kaptCode +
+          "&serviceKey=" +
+          APP_KEY,
+        data: "GET",
+        dataType: "xml",
+        success: function (response) {
+          console.log(response);
+        },
+        error: function (request, statis, error) {
+          console.log(error);
+        },
+      });
+    </script>
+  </body>
+</html>
